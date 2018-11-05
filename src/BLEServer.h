@@ -73,20 +73,26 @@ private:
 	esp_ble_adv_data_t  m_adv_data;
 	uint16_t            m_appId;
 	BLEAdvertising      m_bleAdvertising;
-  uint16_t						m_connId;
-  uint32_t            m_connectedCount;
-  uint16_t            m_gatts_if;
-	FreeRTOS::Semaphore m_semaphoreRegisterAppEvt = FreeRTOS::Semaphore("RegisterAppEvt");
-	FreeRTOS::Semaphore m_semaphoreCreateEvt = FreeRTOS::Semaphore("CreateEvt");
+	uint16_t			m_connId;
+	uint32_t            m_connectedCount;
+	uint16_t            m_gatts_if;
+
+	FreeRTOS::Semaphore m_semaphoreRegisterAppEvt 	= FreeRTOS::Semaphore("RegisterAppEvt");
+	FreeRTOS::Semaphore m_semaphoreUnregisterAppEvt = FreeRTOS::Semaphore("UnregisterAppEvt");
+	FreeRTOS::Semaphore m_semaphoreCreateEvt 		= FreeRTOS::Semaphore("CreateEvt");
+	FreeRTOS::Semaphore m_semaphoreOpenEvt   		= FreeRTOS::Semaphore("OpenEvt");
+
 	BLEServiceMap       m_serviceMap;
 	BLEServerCallbacks* m_pServerCallbacks;
 
 	void            createApp(uint16_t appId);
+	void            deleteApp(void);
 	uint16_t        getConnId();
 	uint16_t        getGattsIf();
 	void            handleGAPEvent(esp_gap_ble_cb_event_t event,	esp_ble_gap_cb_param_t *param);
 	void            handleGATTServerEvent(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param);
 	void            registerApp();
+	void            unregisterApp(uint16_t);
 }; // BLEServer
 
 
