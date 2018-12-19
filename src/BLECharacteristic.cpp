@@ -192,6 +192,14 @@ uint8_t* BLECharacteristic::getData() {
 	return m_value.getData();
 } // getData
 
+/**
+ * @brief Retrieve the size of the current raw data of the characteristic.
+ * @return The size of the current raw data of the characteristic, in number of bytes
+ */
+size_t BLECharacteristic::getDataSize() {
+	return m_value.getLength();
+} // getDataSize
+
 
 /**
  * Handle a GATT server event.
