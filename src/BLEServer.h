@@ -113,6 +113,14 @@ public:
 	virtual void onConnect(BLEServer* pServer);
 
 	/**
+	 * @brief Handle a new client connection
+	 *
+	 * @param [in] pServer A reference to the %BLE server that received the client connection.
+	 * @param [in] param A reference to the union containing the connection event information
+	 */
+	virtual void onConnect(BLEServer* pServer, esp_ble_gatts_cb_param_t *param);
+
+	/**
 	 * @brief Handle an existing client disconnection.
 	 *
 	 * When an existing client disconnects, we are invoked.
