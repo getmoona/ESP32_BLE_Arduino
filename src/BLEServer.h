@@ -64,7 +64,7 @@ public:
 	void            setCallbacks(BLEServerCallbacks* pCallbacks);
 	void            startAdvertising();
 	void 			removeService(BLEService *service);
-
+    void            updateConnParams(esp_bd_addr_t remote_bda, uint16_t minInterval, uint16_t maxInterval, uint16_t latency, uint16_t timeout);
 
 private:
 	BLEServer();

@@ -372,6 +372,30 @@ void BLEServer::removeService(BLEService *service) {
 }
 
 /**
+ * @brief Update the connection parameters
+ *
+ * @param [in] remote_bda BD address of the peripheral
+ * @param [in] minInterval Minimum connection interval
+ * @param [in] maxInterval Maximum connection interval
+ * @param [in] latency Slave latency for the connection in number of connection events
+ * @param [in] timeout Supervision timeout for the LE Link
+ *
+ * @warning Updating the connection parameters is only possible after connection has been established
+ *
+ * Refer to the documentation for esp_ble_conn_update_params_t to have minimum and maximum values for the different parameters.
+ *
+ */
+void BLEServer::updateConnParams(esp_bd_addr_t remote_bda, uint16_t minInterval, uint16_t maxInterval, uint16_t latency, uint16_t timeout) {
+	esp_ble_conn_update_params_t conn_params;
+	memcpy(conn_params.bda, remote_bda, sizeof(esp_bd_addr_t));
+	conn_params.latency = latency;
+	conn_params.max_int = maxInterval;
+	conn_params.min_int = minInterval;
+	conn_params.timeout = timeout;
+	esp_ble_gap_update_conn_params(&conn_params);
+}
+
+/**
  * @brief Start advertising.
  *
  * Start the server advertising its existence.  This is a convenience function and is equivalent to
