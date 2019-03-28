@@ -375,14 +375,12 @@ void BLEServer::removeService(BLEService *service) {
  * @brief Update the connection parameters
  *
  * @param [in] remote_bda BD address of the peripheral
- * @param [in] minInterval Minimum connection interval
- * @param [in] maxInterval Maximum connection interval
- * @param [in] latency Slave latency for the connection in number of connection events
- * @param [in] timeout Supervision timeout for the LE Link
+ * @param [in] minInterval Minimum connection interval in multiple of 1.25ms. Range ESP_BLE_CONN_INT_MIN - ESP_BLE_CONN_INT_MAX
+ * @param [in] maxInterval Maximum connection interval in multiple of 1.25ms. Range ESP_BLE_CONN_INT_MIN - ESP_BLE_CONN_INT_MAX
+ * @param [in] latency Slave latency for the connection in number of connection events. Range 0 - ESP_BLE_CONN_LATENCY_MAX
+ * @param [in] timeout Supervision timeout for the LE Link in multiple of 10ms. Range ESP_BLE_CONN_SUP_TOUT_MIN - ESP_BLE_CONN_SUP_TOUT_MAX
  *
  * @warning Updating the connection parameters is only possible after connection has been established
- *
- * Refer to the documentation for esp_ble_conn_update_params_t to have minimum and maximum values for the different parameters.
  *
  */
 void BLEServer::updateConnParams(esp_bd_addr_t remote_bda, uint16_t minInterval, uint16_t maxInterval, uint16_t latency, uint16_t timeout) {
