@@ -56,6 +56,7 @@ BLEAdvertising::BLEAdvertising() {
 	m_advParams.own_addr_type     = BLE_ADDR_TYPE_PUBLIC;
 	m_advParams.channel_map       = ADV_CHNL_ALL;
 	m_advParams.adv_filter_policy = ADV_FILTER_ALLOW_SCAN_ANY_CON_ANY;
+	m_advParams.peer_addr_type    = BLE_ADDR_TYPE_PUBLIC;
 
 	m_customAdvData               = false;   // No custom advertising data
 	m_customScanResponseData      = false;   // No custom scan response data
