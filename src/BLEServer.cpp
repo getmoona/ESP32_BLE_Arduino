@@ -219,7 +219,6 @@ void BLEServer::handleGATTServerEvent(
 		case ESP_GATTS_CONNECT_EVT: {
 			m_connId = param->connect.conn_id; // Save the connection id.
 			if (m_pServerCallbacks != nullptr) {
-				m_pServerCallbacks->onConnect(this);
 				m_pServerCallbacks->onConnect(this, param);
 			}
 			m_connectedCount++;   // Increment the number of connected devices count.
