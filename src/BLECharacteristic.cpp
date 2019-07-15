@@ -248,22 +248,22 @@ void BLECharacteristic::handleGATTServerEvent(
 		case ESP_GATTS_EXEC_WRITE_EVT: {
 			if(m_writeEvt){
 				m_writeEvt = false;
-			if (param->exec_write.exec_write_flag == ESP_GATT_PREP_WRITE_EXEC) {
-				m_value.commit();
-				if (m_pCallbacks != nullptr) {
-					m_pCallbacks->onWrite(this); // Invoke the onWrite callback handler.
+				if (param->exec_write.exec_write_flag == ESP_GATT_PREP_WRITE_EXEC) {
+					m_value.commit();
+					if (m_pCallbacks != nullptr) {
+						m_pCallbacks->onWrite(this); // Invoke the onWrite callback handler.
+					}
+				} else {
+					m_value.cancel();
 				}
-			} else {
-				m_value.cancel();
-			}
 
-			esp_err_t errRc = ::esp_ble_gatts_send_response(
-					gatts_if,
-					param->write.conn_id,
-					param->write.trans_id, ESP_GATT_OK, nullptr);
-			if (errRc != ESP_OK) {
-				ESP_LOGE(LOG_TAG, "esp_ble_gatts_send_response: rc=%d %s", errRc, GeneralUtils::errorToString(errRc));
-			}
+				esp_err_t errRc = ::esp_ble_gatts_send_response(
+						gatts_if,
+						param->write.conn_id,
+						param->write.trans_id, ESP_GATT_OK, nullptr);
+				if (errRc != ESP_OK) {
+					ESP_LOGE(LOG_TAG, "esp_ble_gatts_send_response: rc=%d %s", errRc, GeneralUtils::errorToString(errRc));
+				}
 			}
 			break;
 		} // ESP_GATTS_EXEC_WRITE_EVT
