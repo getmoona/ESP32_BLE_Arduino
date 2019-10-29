@@ -62,7 +62,6 @@ BLEService::BLEService(BLEUUID uuid, uint32_t numHandles) {
  */
 
 void BLEService::executeCreate(BLEServer *pServer) {
-	//ESP_LOGD(LOG_TAG, ">> executeCreate() - Creating service (esp_ble_gatts_create_service) service uuid: %s", getUUID().toString().c_str());
 	//getUUID(); // Needed for a weird bug fix
 	//char x[1000];
 	//memcpy(x, &m_uuid, sizeof(m_uuid));
@@ -87,7 +86,6 @@ void BLEService::executeCreate(BLEServer *pServer) {
 	}
 
 	m_semaphoreCreateEvt.wait("executeCreate");
-	ESP_LOGD(LOG_TAG, "<< executeCreate");
 } // executeCreate
 
 
@@ -98,7 +96,6 @@ void BLEService::executeCreate(BLEServer *pServer) {
  */
 
 void BLEService::executeDelete() {
-	ESP_LOGD(LOG_TAG, ">> executeDelete()");
 	m_semaphoreDeleteEvt.take("executeDelete"); // Take the mutex and release at event ESP_GATTS_DELETE_EVT
 
 	esp_err_t errRc = ::esp_ble_gatts_delete_service( getHandle() );
@@ -109,7 +106,6 @@ void BLEService::executeDelete() {
 	}
 
 	m_semaphoreDeleteEvt.wait("executeDelete");
-	ESP_LOGD(LOG_TAG, "<< executeDelete");
 } // executeDelete
 
 
@@ -145,9 +141,8 @@ void BLEService::start() {
 // We start the service through its local handle which was returned in the ESP_GATTS_CREATE_EVT event
 // obtained as a result of calling esp_ble_gatts_create_service().
 //
-	ESP_LOGD(LOG_TAG, ">> start(): Starting service (esp_ble_gatts_start_service): %s", toString().c_str());
 	if (m_handle == NULL_HANDLE) {
-		ESP_LOGE(LOG_TAG, "<< !!! We attempted to start a service but don't know its handle!");
+		ESP_LOGE(LOG_TAG, "!!! We attempted to start a service but don't know its handle!");
 		return;
 	}
 
@@ -166,12 +161,10 @@ void BLEService::start() {
 	esp_err_t errRc = ::esp_ble_gatts_start_service(m_handle);
 
 	if (errRc != ESP_OK) {
-		ESP_LOGE(LOG_TAG, "<< esp_ble_gatts_start_service: rc=%d %s", errRc, GeneralUtils::errorToString(errRc));
+		ESP_LOGE(LOG_TAG, "esp_ble_gatts_start_service: rc=%d %s", errRc, GeneralUtils::errorToString(errRc));
 		return;
 	}
 	m_semaphoreStartEvt.wait("start");
-
-	ESP_LOGD(LOG_TAG, "<< start()");
 } // start
 
 
@@ -184,9 +177,8 @@ void BLEService::stop() {
 // We start the service through its local handle which was returned in the ESP_GATTS_CREATE_EVT event
 // obtained as a result of calling esp_ble_gatts_create_service().
 //
-	ESP_LOGD(LOG_TAG, ">> stop(): Stopping service (esp_ble_gatts_stop_service): %s", toString().c_str());
 	if (m_handle == NULL_HANDLE) {
-		ESP_LOGE(LOG_TAG, "<< !!! We attempted to stop a service but don't know its handle!");
+		ESP_LOGE(LOG_TAG, "!!! We attempted to stop a service but don't know its handle!");
 		return;
 	}
 
@@ -194,12 +186,10 @@ void BLEService::stop() {
 	esp_err_t errRc = ::esp_ble_gatts_stop_service(m_handle);
 
 	if (errRc != ESP_OK) {
-		ESP_LOGE(LOG_TAG, "<< esp_ble_gatts_stop_service: rc=%d %s", errRc, GeneralUtils::errorToString(errRc));
+		ESP_LOGE(LOG_TAG, "esp_ble_gatts_stop_service: rc=%d %s", errRc, GeneralUtils::errorToString(errRc));
 		return;
 	}
 	m_semaphoreStopEvt.wait("stop");
-
-	ESP_LOGD(LOG_TAG, "<< stop()");
 } // start
 
 
@@ -208,13 +198,11 @@ void BLEService::stop() {
  * @param [in] handle The handle associated with the service.
  */
 void BLEService::setHandle(uint16_t handle) {
-	ESP_LOGD(LOG_TAG, ">> setHandle - Handle=0x%.2x, service UUID=%s)", handle, getUUID().toString().c_str());
 	if (m_handle != NULL_HANDLE) {
 		ESP_LOGE(LOG_TAG, "!!! Handle is already set %.2x", m_handle);
 		return;
 	}
 	m_handle = handle;
-	ESP_LOGD(LOG_TAG, "<< setHandle");
 } // setHandle
 
 
@@ -236,22 +224,19 @@ void BLEService::addCharacteristic(BLECharacteristic* pCharacteristic) {
 // BLECharacteristicMap class instance found in m_characteristicMap.  We add the characteristic
 // to the map and then ask the service to add the characteristic at the BLE level (ESP-IDF).
 //
-	ESP_LOGD(LOG_TAG, ">> addCharacteristic()");
 	ESP_LOGD(LOG_TAG, "Adding characteristic: uuid=%s to service: %s",
 		pCharacteristic->getUUID().toString().c_str(),
 		toString().c_str());
 
 	// Check that we don't add the same characteristic twice.
 	if (m_characteristicMap.getByUUID(pCharacteristic->getUUID()) != nullptr) {
-		ESP_LOGW(LOG_TAG, "<< Adding a new characteristic with the same UUID as a previous one");
+		ESP_LOGW(LOG_TAG, "Adding a new characteristic with the same UUID as a previous one");
 		//return;
 	}
 
 	// Remember this characteristic in our map of characteristics.  At this point, we can lookup by UUID
 	// but not by handle.  The handle is allocated to us on the ESP_GATTS_ADD_CHAR_EVT.
 	m_characteristicMap.setByUUID(pCharacteristic, pCharacteristic->getUUID());
-
-	ESP_LOGD(LOG_TAG, "<< addCharacteristic()");
 } // addCharacteristic
 
 

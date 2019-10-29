@@ -38,7 +38,6 @@ BLERemoteCharacteristic::BLERemoteCharacteristic(
 		BLEUUID              uuid,
 		esp_gatt_char_prop_t charProp,
 		BLERemoteService*    pRemoteService) {
-	ESP_LOGD(LOG_TAG, ">> BLERemoteCharacteristic: handle: %d 0x%d, uuid: %s", handle, handle, uuid.toString().c_str());
 	m_handle         = handle;
 	m_uuid           = uuid;
 	m_charProp       = charProp;
@@ -46,7 +45,6 @@ BLERemoteCharacteristic::BLERemoteCharacteristic(
 	m_notifyCallback = nullptr;
 
 	retrieveDescriptors(); // Get the descriptors for this characteristic
-	ESP_LOGD(LOG_TAG, "<< BLERemoteCharacteristic");
 } // BLERemoteCharacteristic
 
 
@@ -281,8 +279,6 @@ void BLERemoteCharacteristic::gattClientEventHandler(
  * @brief Populate the descriptors (if any) for this characteristic.
  */
 void BLERemoteCharacteristic::retrieveDescriptors() {
-	ESP_LOGD(LOG_TAG, ">> retrieveDescriptors() for characteristic: %s", getUUID().toString().c_str());
-
 	removeDescriptors();   // Remove any existing descriptors.
 
 	// Loop over each of the descriptors within the service associated with this characteristic.
@@ -327,7 +323,6 @@ void BLERemoteCharacteristic::retrieveDescriptors() {
 		offset++;
 	} // while true
 	//m_haveCharacteristics = true; // Remember that we have received the characteristics.
-	ESP_LOGD(LOG_TAG, "<< retrieveDescriptors(): Found %d descriptors.", offset);
 } // getDescriptors
 
 
@@ -344,8 +339,6 @@ std::map<std::string, BLERemoteDescriptor *>* BLERemoteCharacteristic::getDescri
  * @return The handle for this characteristic.
  */
 uint16_t BLERemoteCharacteristic::getHandle() {
-	//ESP_LOGD(LOG_TAG, ">> getHandle: Characteristic: %s", getUUID().toString().c_str());
-	//ESP_LOGD(LOG_TAG, "<< getHandle: %d 0x%.2x", m_handle, m_handle);
 	return m_handle;
 } // getHandle
 
@@ -356,15 +349,14 @@ uint16_t BLERemoteCharacteristic::getHandle() {
  * @return The Remote descriptor (if present) or null if not present.
  */
 BLERemoteDescriptor* BLERemoteCharacteristic::getDescriptor(BLEUUID uuid) {
-	ESP_LOGD(LOG_TAG, ">> getDescriptor: uuid: %s", uuid.toString().c_str());
 	std::string v = uuid.toString();
 	for (auto &myPair : m_descriptorMap) {
 		if (myPair.first == v) {
-			ESP_LOGD(LOG_TAG, "<< getDescriptor: found");
+			ESP_LOGD(LOG_TAG, "getDescriptor: found");
 			return myPair.second;
 		}
 	}
-	ESP_LOGD(LOG_TAG, "<< getDescriptor: Not found");
+	ESP_LOGD(LOG_TAG, "getDescriptor: Not found");
 	return nullptr;
 } // getDescriptor
 
@@ -431,8 +423,6 @@ uint8_t BLERemoteCharacteristic::readUInt8(void) {
  * @return The value of the remote characteristic.
  */
 std::string BLERemoteCharacteristic::readValue() {
-	ESP_LOGD(LOG_TAG, ">> readValue(): uuid: %s, handle: %d 0x%.2x", getUUID().toString().c_str(), getHandle(), getHandle());
-
 	// Check to see that we are connected.
 	if (!getRemoteService()->getClient()->isConnected()) {
 		ESP_LOGE(LOG_TAG, "Disconnected");
@@ -459,7 +449,6 @@ std::string BLERemoteCharacteristic::readValue() {
 	// in m_value will contain our data.
 	m_semaphoreReadCharEvt.wait("readValue");
 
-	ESP_LOGD(LOG_TAG, "<< readValue(): length: %d", m_value.length());
 	return m_value;
 } // readValue
 
@@ -476,8 +465,6 @@ void BLERemoteCharacteristic::registerForNotify(
 			uint8_t*                 pData,
 			size_t                   length,
 			bool                     isNotify)) {
-	ESP_LOGD(LOG_TAG, ">> registerForNotify(): %s", toString().c_str());
-
 	m_notifyCallback = notifyCallback;   // Save the notification callback.
 
 	m_semaphoreRegForNotifyEvt.take("registerForNotify");
@@ -506,8 +493,6 @@ void BLERemoteCharacteristic::registerForNotify(
 	} // End Unregister
 
 	m_semaphoreRegForNotifyEvt.wait("registerForNotify");
-
-	ESP_LOGD(LOG_TAG, "<< registerForNotify()");
 } // registerForNotify
 
 
@@ -548,8 +533,6 @@ std::string BLERemoteCharacteristic::toString() {
  * @return N/A.
  */
 void BLERemoteCharacteristic::writeValue(std::string newValue, bool response) {
-	ESP_LOGD(LOG_TAG, ">> writeValue(), length: %d", newValue.length());
-
 	// Check to see that we are connected.
 	if (!getRemoteService()->getClient()->isConnected()) {
 		ESP_LOGE(LOG_TAG, "Disconnected");
@@ -575,8 +558,6 @@ void BLERemoteCharacteristic::writeValue(std::string newValue, bool response) {
 	}
 
 	m_semaphoreWriteCharEvt.wait("writeValue");
-
-	ESP_LOGD(LOG_TAG, "<< writeValue");
 } // writeValue
 
 

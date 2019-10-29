@@ -193,8 +193,6 @@ void BLEScan::setWindow(uint16_t windowMSecs) {
  * @return True if scan started or false if there was an error.
  */
 bool BLEScan::start(uint32_t duration, void (*scanCompleteCB)(BLEScanResults)) {
-	ESP_LOGD(LOG_TAG, ">> start(duration=%d)", duration);
-
 	m_semaphoreScanEnd.take(std::string("start"));
 	m_scanCompleteCB = scanCompleteCB;                  // Save the callback to be invoked when the scan completes.
 
@@ -217,8 +215,6 @@ bool BLEScan::start(uint32_t duration, void (*scanCompleteCB)(BLEScanResults)) {
 	}
 
 	m_stopped = false;
-
-	ESP_LOGD(LOG_TAG, "<< start()");
 	return true;
 } // start
 
@@ -241,8 +237,6 @@ BLEScanResults BLEScan::start(uint32_t duration) {
  * @return N/A.
  */
 void BLEScan::stop() {
-	ESP_LOGD(LOG_TAG, ">> stop()");
-
 	esp_err_t errRc = ::esp_ble_gap_stop_scanning();
 
 	m_stopped = true;
@@ -253,8 +247,6 @@ void BLEScan::stop() {
 	}
 
 	m_semaphoreScanEnd.give();
-
-	ESP_LOGD(LOG_TAG, "<< stop()");
 } // stop
 
 
@@ -262,7 +254,6 @@ void BLEScan::stop() {
  * @brief Dump the scan results to the log.
  */
 void BLEScanResults::dump() {
-	ESP_LOGD(LOG_TAG, ">> Dump scan results:");
 	for (int i=0; i<getCount(); i++) {
 		ESP_LOGD(LOG_TAG, "- %s", getDevice(i).toString().c_str());
 	}
