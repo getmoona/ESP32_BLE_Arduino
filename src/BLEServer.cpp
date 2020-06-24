@@ -19,6 +19,7 @@
 #include <string.h>
 #include <string>
 #include <unordered_set>
+#include "GeneralUtils.h"
 #ifdef ARDUINO_ARCH_ESP32
 #include "esp32-hal-log.h"
 #endif
@@ -53,6 +54,18 @@ BLEServer::~BLEServer() {
 	}
 } // ~BLEServer
 
+
+void BLEServer::disconnectClient(void) {
+	m_semaphoreCloseEvt.take("disconnectClient");
+	ESP_LOGD(LOG_TAG, ">> disconnectClient()");
+	esp_err_t errRc = ::esp_ble_gatts_close(getGattsIf(), getConnId());
+	if (errRc != ESP_OK) {
+		ESP_LOGE(LOG_TAG, "esp_ble_gatts_close: rc=%d %s", errRc, GeneralUtils::errorToString(errRc));
+		return;
+	}
+	ESP_LOGD(LOG_TAG, "<< disconnectClient()");
+	m_semaphoreCloseEvt.wait("disconnectClient");
+} // disconnectClient
 
 void BLEServer::createApp(uint16_t appId) {
 	m_appId = appId;
@@ -307,7 +320,13 @@ void BLEServer::handleGATTServerEvent(
 			break;
 		}
 
+		case ESP_GATTS_CLOSE_EVT: {
+			m_semaphoreCloseEvt.give();
+			break;
+		}
+
 		default: {
+			ESP_LOGW(LOG_TAG, "Unhandled GATTS event %s", BLEUtils::gattServerEventTypeToString(event).c_str());
 			break;
 		}
 	}
@@ -356,8 +375,11 @@ void BLEServer::setCallbacks(BLEServerCallbacks* pCallbacks) {
  */
 void BLEServer::removeService(BLEService *service) {
 	service->stop();
+	ESP_LOGW(LOG_TAG, "STOPPED");
 	service->executeDelete();
+	ESP_LOGW(LOG_TAG, "DELETED");
 	m_serviceMap.removeService(service);
+	ESP_LOGW(LOG_TAG, "STOPPED");
 }
 
 /**

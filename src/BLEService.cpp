@@ -190,6 +190,7 @@ void BLEService::stop() {
 		return;
 	}
 	m_semaphoreStopEvt.wait("stop");
+	ESP_LOGW(LOG_TAG, "Stopped service");
 } // start
 
 

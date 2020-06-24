@@ -65,6 +65,7 @@ public:
 	void            startAdvertising();
 	void 			removeService(BLEService *service);
     void            updateConnParams(esp_bd_addr_t remote_bda, uint16_t minInterval, uint16_t maxInterval, uint16_t latency, uint16_t timeout);
+	void 			disconnectClient(void);
 
 private:
 	BLEServer();
@@ -82,6 +83,7 @@ private:
 	FreeRTOS::Semaphore m_semaphoreUnregisterAppEvt = FreeRTOS::Semaphore("UnregisterAppEvt");
 	FreeRTOS::Semaphore m_semaphoreCreateEvt 		= FreeRTOS::Semaphore("CreateEvt");
 	FreeRTOS::Semaphore m_semaphoreOpenEvt   		= FreeRTOS::Semaphore("OpenEvt");
+	FreeRTOS::Semaphore m_semaphoreCloseEvt   		= FreeRTOS::Semaphore("CloseEvt");
 
 	BLEServiceMap       m_serviceMap;
 	BLEServerCallbacks* m_pServerCallbacks;
